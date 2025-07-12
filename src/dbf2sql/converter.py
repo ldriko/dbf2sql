@@ -7,7 +7,7 @@ Contains the main converter class and functionality.
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 try:
     from dbfread import DBF  # type: ignore
@@ -185,15 +185,16 @@ CREATE TABLE {table_name} (
                 table_name = dbf_path.stem
 
                 # Get field information
-                fields: List[Dict[str, Any]] = [
-                    {
-                        "name": field.name,
-                        "type": field.type,
-                        "length": field.length,
-                        "decimal": field.decimal_count,
+                fields: List[Dict[str, Any]] = []
+                for field in dbf.fields:  # type: ignore
+                    field_any = cast(Any, field)
+                    field_info = {
+                        "name": field_any.name,
+                        "type": field_any.type,
+                        "length": field_any.length,
+                        "decimal": field_any.decimal_count,
                     }
-                    for field in dbf.fields
-                ]
+                    fields.append(field_info)
 
                 field_names: List[str] = [field["name"] for field in fields]
 
@@ -215,9 +216,9 @@ CREATE TABLE {table_name} (
                     batch: List[Dict[str, Any]] = []
                     total_processed = 0
 
-                    for record in dbf:
+                    for record in cast(Any, dbf):
                         # Convert record to dict to ensure proper typing
-                        record_dict: Dict[str, Any] = dict(record)  # type: ignore
+                        record_dict: Dict[str, Any] = dict(record)
                         batch.append(record_dict)
 
                         if len(batch) >= self.batch_size:
