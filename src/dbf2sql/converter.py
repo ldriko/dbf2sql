@@ -156,13 +156,14 @@ CREATE TABLE {table_name} (
     {values_str};
 """
 
-    def convert_dbf_to_sql(self, dbf_file_path: str, sql_file_path: Optional[str] = None) -> bool:
+    def convert_dbf_to_sql(self, dbf_file_path: str, sql_file_path: Optional[str] = None, output_dir: Optional[str] = None) -> bool:
         """
         Convert a DBF file to SQL file.
 
         Args:
             dbf_file_path: Path to the DBF file
             sql_file_path: Path to the output SQL file (optional)
+            output_dir: Output directory for SQL files (optional)
 
         Returns:
             True if conversion was successful, False otherwise
@@ -175,7 +176,14 @@ CREATE TABLE {table_name} (
 
             # Generate SQL file path if not provided
             if sql_file_path is None:
-                sql_file_path = str(dbf_path.with_suffix(".sql"))
+                if output_dir is not None:
+                    # Use specified output directory
+                    output_path = Path(output_dir)
+                    output_path.mkdir(parents=True, exist_ok=True)
+                    sql_file_path = str(output_path / f"{dbf_path.stem}.sql")
+                else:
+                    # Use same directory as DBF file
+                    sql_file_path = str(dbf_path.with_suffix(".sql"))
 
             self.logger.info(f"Converting {dbf_file_path} to {sql_file_path}")
 
@@ -254,12 +262,13 @@ CREATE TABLE {table_name} (
             self.logger.error(f"Error converting {dbf_file_path}: {str(e)}")
             return False
 
-    def convert_multiple_files(self, dbf_files: List[str]) -> Dict[str, bool]:
+    def convert_multiple_files(self, dbf_files: List[str], output_dir: Optional[str] = None) -> Dict[str, bool]:
         """
         Convert multiple DBF files to SQL files.
 
         Args:
             dbf_files: List of DBF file paths
+            output_dir: Output directory for SQL files (optional)
 
         Returns:
             Dictionary mapping file paths to conversion success status
@@ -268,6 +277,6 @@ CREATE TABLE {table_name} (
 
         for dbf_file in dbf_files:
             self.logger.info(f"Starting conversion of {dbf_file}")
-            results[dbf_file] = self.convert_dbf_to_sql(dbf_file)
+            results[dbf_file] = self.convert_dbf_to_sql(dbf_file, output_dir=output_dir)
 
         return results

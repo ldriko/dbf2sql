@@ -50,7 +50,7 @@ dbf2sql file1.dbf file2.dbf file3.dbf
 ### Advanced Options
 
 ```bash
-dbf2sql --batch-size 2000 --encoding cp1252 data/*.dbf
+dbf2sql --batch-size 2000 --encoding cp1252 --output-dir sql_output data/*.dbf
 ```
 
 ### Using as a Python Library
@@ -64,8 +64,14 @@ converter = DBFToSQLConverter(batch_size=1000, encoding='utf-8')
 # Convert a single file
 success = converter.convert_dbf_to_sql('data.dbf', 'output.sql')
 
+# Convert a single file to specific output directory
+success = converter.convert_dbf_to_sql('data.dbf', output_dir='sql_output')
+
 # Convert multiple files
 results = converter.convert_multiple_files(['file1.dbf', 'file2.dbf'])
+
+# Convert multiple files to specific output directory
+results = converter.convert_multiple_files(['file1.dbf', 'file2.dbf'], output_dir='sql_output')
 ```
 
 ### Command Line Options
@@ -73,12 +79,15 @@ results = converter.convert_multiple_files(['file1.dbf', 'file2.dbf'])
 - `dbf_files`: One or more DBF files to convert (required)
 - `--batch-size`: Number of records to process in each batch (default: 1000)
 - `--encoding`: Character encoding for DBF files (default: utf-8)
+- `--output-dir, -o`: Output directory for SQL files (default: same directory as DBF files)
 - `--verbose, -v`: Enable verbose logging
 
 ## Output
 
 For each input DBF file, the tool generates:
 - A SQL file with the same name but `.sql` extension
+- By default, SQL files are created in the same directory as the DBF files
+- With `--output-dir` option, SQL files are created in the specified directory
 - CREATE TABLE statement with appropriate field types
 - INSERT statements with batched records for optimal performance
 - Comments with file information and record counts
@@ -123,6 +132,18 @@ dbf2sql --batch-size 5000 sales.dbf products.dbf orders.dbf
 ```bash
 dbf2sql --encoding cp1252 legacy_data.dbf
 # Output: legacy_data.sql
+```
+
+### Convert files to specific output directory
+```bash
+dbf2sql --output-dir /path/to/output customers.dbf orders.dbf
+# Output: /path/to/output/customers.sql, /path/to/output/orders.sql
+```
+
+### Short form of output directory option
+```bash
+dbf2sql -o sql_files data/*.dbf
+# Output: All SQL files in sql_files/ directory
 ```
 
 ### Verbose output

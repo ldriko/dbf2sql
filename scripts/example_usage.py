@@ -31,6 +31,14 @@ def example_usage():
     else:
         print("✗ Conversion failed!")
     
+    # Example 1b: Convert a single file to a specific output directory
+    print("\nExample 1b: Converting a single DBF file to specific output directory")
+    success = converter.convert_dbf_to_sql('data.dbf', output_dir='sql_output')
+    if success:
+        print("✓ Conversion successful!")
+    else:
+        print("✗ Conversion failed!")
+    
     # Example 2: Convert multiple files
     print("\nExample 2: Converting multiple DBF files")
     dbf_files = ['file1.dbf', 'file2.dbf', 'file3.dbf']
@@ -39,6 +47,15 @@ def example_usage():
     for file_path, success in results.items():
         status = "✓ Success" if success else "✗ Failed"
         print(f"  {file_path}: {status}")
+    
+    # Example 2b: Convert multiple files to a specific output directory
+    print("\nExample 2b: Converting multiple DBF files to specific output directory")
+    output_directory = 'sql_output'
+    results = converter.convert_multiple_files(dbf_files, output_dir=output_directory)
+    
+    for file_path, success in results.items():
+        status = "✓ Success" if success else "✗ Failed"
+        print(f"  {file_path} -> {output_directory}/: {status}")
     
     # Example 3: Find and convert all DBF files in a directory
     print("\nExample 3: Converting all DBF files in current directory")
