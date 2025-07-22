@@ -56,21 +56,21 @@ class DBFToSQLConverter:
         Returns:
             SQL type string
         """
+        # Force all decimal (N and F) fields to DECIMAL(19,2)
+        if field_type == "N":
+            return "DECIMAL(19,2)"
+        if field_type == "F":
+            return "DECIMAL(19,2)"
         type_mapping = {
             "C": f"VARCHAR({field_length})",  # Character
-            "N": (
-                f"DECIMAL({field_length},{field_decimal})" if field_decimal > 0 else "BIGINT"
-            ),  # Numeric
             "D": "DATE",  # Date
             "L": "BOOLEAN",  # Logical
-            "F": f"DECIMAL({field_length},{field_decimal})",  # Float
             "M": "TEXT",  # Memo
             "I": "INTEGER",  # Integer
             "B": "DOUBLE",  # Double
             "T": "DATETIME",  # DateTime
             "Y": "DECIMAL(19,4)",  # Currency
         }
-
         return type_mapping.get(field_type, f"VARCHAR({field_length})")
 
     def _escape_sql_value(self, value: Any) -> str:
@@ -156,7 +156,12 @@ CREATE TABLE {table_name} (
     {values_str};
 """
 
-    def convert_dbf_to_sql(self, dbf_file_path: str, sql_file_path: Optional[str] = None, output_dir: Optional[str] = None) -> bool:
+    def convert_dbf_to_sql(
+        self,
+        dbf_file_path: str,
+        sql_file_path: Optional[str] = None,
+        output_dir: Optional[str] = None,
+    ) -> bool:
         """
         Convert a DBF file to SQL file.
 
@@ -262,7 +267,9 @@ CREATE TABLE {table_name} (
             self.logger.error(f"Error converting {dbf_file_path}: {str(e)}")
             return False
 
-    def convert_multiple_files(self, dbf_files: List[str], output_dir: Optional[str] = None) -> Dict[str, bool]:
+    def convert_multiple_files(
+        self, dbf_files: List[str], output_dir: Optional[str] = None
+    ) -> Dict[str, bool]:
         """
         Convert multiple DBF files to SQL files.
 
