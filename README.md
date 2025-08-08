@@ -47,6 +47,16 @@ Convert multiple DBF files:
 dbf2sql file1.dbf file2.dbf file3.dbf
 ```
 
+Convert all DBF files in a folder:
+```bash
+dbf2sql --folder /path/to/dbf/files
+```
+
+Convert all DBF files in a folder to specific output directory:
+```bash
+dbf2sql --folder /path/to/dbf/files --output-dir /path/to/output
+```
+
 ### Advanced Options
 
 ```bash
@@ -76,7 +86,8 @@ results = converter.convert_multiple_files(['file1.dbf', 'file2.dbf'], output_di
 
 ### Command Line Options
 
-- `dbf_files`: One or more DBF files to convert (required)
+- `dbf_files`: One or more DBF files to convert (required if --folder not used)
+- `--folder, -f`: Folder containing DBF files to convert (searches recursively)
 - `--batch-size`: Number of records to process in each batch (default: 1000)
 - `--encoding`: Character encoding for DBF files (default: utf-8)
 - `--output-dir, -o`: Output directory for SQL files (default: same directory as DBF files)
@@ -150,6 +161,18 @@ dbf2sql -o sql_files data/*.dbf
 ```bash
 dbf2sql --verbose large_file.dbf
 # Shows detailed progress and debug information
+```
+
+### Convert all DBF files in a folder
+```bash
+dbf2sql --folder /path/to/data/folder
+# Finds and converts all .dbf and .DBF files recursively
+```
+
+### Convert folder with output directory
+```bash
+dbf2sql --folder /source/folder --output-dir /output/folder
+# All SQL files created in /output/folder
 ```
 
 ## Error Handling
